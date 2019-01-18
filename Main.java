@@ -35,10 +35,10 @@ public class Main {
     /*2. Создайте любое число. Определите, является ли последняя цифра числа семеркой.*/
     static void taskSecond() {
         taskPrintFormat("2");
-        int randomNumber = new Random().nextInt(1000);
-        //int randomNumber = 77;
+        //int randomNumber = new Random().nextInt();
+        int randomNumber = -707;
         System.out.print("Number " + randomNumber + " has the last digit");
-        System.out.println(randomNumber % 10 == 7 ? " 7" : " NOT 7");
+        System.out.println(Math.abs(randomNumber % 10) == 7 ? " 7" : " NOT 7");
     }
 
     /*3. Имеется прямоугольное отверстие размерами a и b (размеры задать любые), определить, можно
@@ -56,7 +56,12 @@ public class Main {
     добавив к нему слово «рублей» в правильном падеже.*/
     static void taskFourth() {
         taskPrintFormat("4");
-        int money = new Random().nextInt(10000);
+        //int money = new Random().nextInt(10000);
+        int money = 124;
+        if (money % 100 / 10 == 1) {
+            System.out.println(money + " рублей");
+            return;
+        }
         switch (money % 10) {
             case 1:
                 System.out.println(money + " рубль");
