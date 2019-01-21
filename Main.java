@@ -1,102 +1,191 @@
+import java.util.Arrays;
 import java.util.Random;
 
 public class Main {
 
     public static void main(String[] args) {
-        taskFirst();
-        taskSecond();
-        taskThird();
-        taskFourth();
-        taskFifth();
-        taskPrintFormat("FINISH");
-        //System.out.println(taskFinish(new Random().nextDouble()*10, new Random().nextDouble()*10, new Random().nextDouble()*10));
-        System.out.println("Result = " + taskFinish(0, 2, 3));
-        System.out.println("---------- ❗❗❗❗ IN ONE STRING [number days in month] ❗❗❗ ------------");
-        int year = 1900;
-        for(int i = 1; i < 13; i++) {
-            System.out.printf("%02d.%d%10d days\n", i, year, numberDaysInMonth(i, year));
+        maxMatchLettersIn2Names();
+        task1();
+        task2();
+        task3();
+        task4();
+        task5();
+    }
+
+    /*Найти максимальное по длине совпадение букв в 2 именах*/
+    static void maxMatchLettersIn2Names() {
+        final String[] catNamesArray = {"Рыжик", "Барсик", "Мурзик", "Мурка", "Васька", "Томасина", "Бобик",
+                "Кристина","Пушок", "Дымка", "Кузя", "Китти", "Барбос", "Масяня", "Барби"};
+        int countMax = 0, count = 0;
+        String str;
+        int name1 = -1, name2 = -1;
+        for (int i = 0; i < catNamesArray.length; i++) {
+            for (int j = i+1; j < catNamesArray.length; j++) {
+                if (catNamesArray[j].startsWith(catNamesArray[i]) || catNamesArray[i].startsWith(catNamesArray[j]))
+                    count = Math.min(catNamesArray[i].length(),catNamesArray[j].length());
+                else {
+                    str = "";
+                    count = 0;
+                    for (int k = 0; k < catNamesArray[i].length(); k++) {
+                        str = str + catNamesArray[i].charAt(k);
+                        if (catNamesArray[j].startsWith(str))
+                            count++;
+                        else
+                            break;
+                    }
+                }
+                if (count >= countMax) {
+                    name1 = i;
+                    name2 = j;
+                    countMax = count;
+                }
+            }
+        }
+        System.out.println("-----Максимальное по длине совпадение букв в 2 именах-----");
+        if (countMax > 0)
+            System.out.println(catNamesArray[name1] + " и " + catNamesArray[name2] +" = " + countMax);
+        else
+            System.out.println("Совпадений нет!");
+    }
+
+    /*1. Создайте массив с 10-ю переменными типа int. Используя оператор "for" найдите и выведите на экран
+    наименьшее и наибольшее значение в массиве.
+    min value = "значение, которое у вас получилось".
+    max value = "значение, которое у вас получилось".
+    Далее замените наименьшее значение на 0, а наибольшее на 99 и выведите получившийся массив на экран в виде
+    [23, 0, 34, 99, 43534]*/
+    static void task1() {
+        //long startTime = System.nanoTime();
+        int[] array = new int[10];
+        for (int i = 0; i < array.length; i++)
+            array[i] = new Random().nextInt(100);
+        taskPrintFormat(1);
+        System.out.println(Arrays.toString(array));
+        int maxValue = Integer.MIN_VALUE, minValue = Integer.MAX_VALUE;
+        for (int i : array) {
+            maxValue = Math.max(i,maxValue);
+            minValue = Math.min(i,minValue);
+        }
+        System.out.println("min value = " + minValue + "\nmax value = " + maxValue);
+        for (int i = 0; i < array.length; i++) {
+            if(array[i] == maxValue)
+                array[i] = 99;
+            if(array[i] == minValue)
+                array[i] = 0;
+        }
+        System.out.println("After replacing (min -> 0, max -> 99): " + Arrays.toString(array));
+        //long timeSpent = System.nanoTime() - startTime;
+        //System.out.println(timeSpent);
+    }
+
+    /*2. Создайте массив с 10-ю переменными типа float. Далее найдите дубликаты и выведите их количество.
+    Пример: есть массив {2, 3, 5, 7, 6, 5, 7, 3, 7, 20} - в данном массиве цифра 3 и 7 повторяются.
+    В результате выполнения программы на экран должно вывести:
+        [3] - повторений 2
+        [7] - повторений 3*/
+    static void task2() {
+        float[] array = {3.14f, 1.2f, 453.7f, 3.14f, 5.23f, 6.54f, 1.2f, 6.55f, 3.14f, 1234.67f};
+        int[] exclusion = new int[array.length];
+        int count = 0;
+        taskPrintFormat(2);
+        System.out.println(Arrays.toString(array));
+        for (int i = 0; i < array.length; i++) {
+            count = 1;
+            for (int j = i + 1; j < array.length; j++) {
+                if (array[i] == array[j] & exclusion[i] != -1) {
+                    count++;
+                    exclusion[j] = -1;
+                }
+            }
+            if (count > 1)
+                System.out.println("[" + array[i] + "] - повторений " + count);
         }
     }
 
-    /*1.  Создайте переменную типа String c любым текстом (не сильно короткое).
-    Далее выведите на экран количество символов в данной строке. Далее разделите строку пополам
-    если ровно поделить не выходит то +-1 не страшно), в результате у вас должно быть 2-е новых
-    переменных типа String с частями из изначальной строки. Полученные строки выведите на экран.*/
-    static void taskFirst() {
-        taskPrintFormat("1");
-        String text = "Cat and dog grooming is about more than just looking nice — pet grooming is an " +
-                "essential part of keeping your furry friends healthy.";
-        System.out.println(text + "\n\u2BC8Length of string: " + text.length());
-        String firstPartOfText = text.substring(0, text.length() / 2);
-        String secondPartOfText = text.substring(text.length() / 2);
-        System.out.println("\u2BC8First part of string: \"" + firstPartOfText + "\"\n\u2BC8Second part of string: \"" + secondPartOfText + "\"");
-    }
-
-    /*2. Создайте любое число. Определите, является ли последняя цифра числа семеркой.*/
-    static void taskSecond() {
-        taskPrintFormat("2");
-        //int randomNumber = new Random().nextInt();
-        int randomNumber = -707;
-        System.out.print("Number " + randomNumber + " has the last digit");
-        System.out.println(Math.abs(randomNumber % 10) == 7 ? " 7" : " NOT 7");
-    }
-
-    /*3. Имеется прямоугольное отверстие размерами a и b (размеры задать любые), определить, можно
-    ли его полностью закрыть круглой картонкой радиусом r (тоже подставляем любое значение).*/
-    static void taskThird() {
-        taskPrintFormat("3");
-        int a = new Random().nextInt(20), b = new Random().nextInt(20), r = new Random().nextInt(20);
-        //int a = 5, b = 6, r = 3;
-        System.out.printf("Rectangle with sides %d and %d %s be closed by circle with a radius %d\n", a, b,
-                2 * r >= Math.sqrt(a * a + b * b) ? "CAN" : "CAN NOT", r);
-    }
-
-
-    /*4. Имеется целое число (любое), это число — сумма денег в рублях. Вывести это число,
-    добавив к нему слово «рублей» в правильном падеже.*/
-    static void taskFourth() {
-        taskPrintFormat("4");
-        //int money = new Random().nextInt(10000);
-        int money = 124;
-        if (money % 100 / 10 == 1) {
-            System.out.println(money + " рублей");
-            return;
+    /*3. Напишите программу, которая печатает массив, затем инвертирует (то есть меняет местами
+    первый элемент с последним, второй — с предпоследним и т.д.), и вновь печатает.*/
+    static void task3() {
+        int[] array = new int[11];
+        for (int i = 0; i < array.length; i++)
+            array[i] = new Random().nextInt(100);
+        taskPrintFormat(3);
+        System.out.println(Arrays.toString(array));
+        for (int i = 0, j = array.length - 1; i < array.length/2; i++, j--) {
+            int temp = array[j];
+            array[j] = array[i];
+            array[i] = temp;
         }
-        switch (money % 10) {
-            case 1:
-                System.out.println(money + " рубль");
+        System.out.println(Arrays.toString(array));
+    }
+
+    /*4. Написать программу, определяющую, образуют ли цифры некоторого числа
+    строго возрастающую последовательность. Например: 123 – образуют, 212 – не образуют.*/
+    static void task4() {
+        long number = 12345677;
+        taskPrintFormat(4);
+        /*String str = Long.toString(number);       // ----- 1 вариант
+        for(int i = 0; i < str.length()-1; i++) {
+            if ( str.charAt(i) < str.charAt(i + 1)) {
+                if (i == str.length()-2)
+                    System.out.println(number + " - строго возрастающая последовательность");
+                continue;
+            }
+            else {
+                System.out.println(number + " - НЕ строго возрастающая последовательность");
                 break;
-            case 2:
-            case 3:
-            case 4:
-                System.out.println(money + " рубля");
+            }
+        }*/
+        long numberCopy = number;
+        int length = Long.toString(numberCopy).length(), i = 1;
+        int[] mas = new int[length];
+        do{
+            mas[length - i] = (int)numberCopy%10;
+            numberCopy /= 10;
+            i++;
+        } while (numberCopy > 0);
+        for(int k = 0; k < length - 1; k++) {
+            if(mas[k+1] > mas[k]) {
+                if(k == length - 2)
+                    System.out.println(number + " - строго возрастающая последовательность");
+                continue;
+            }
+            else {
+                System.out.println(number + " - НЕ строго возрастающая последовательность");
                 break;
-            default:
-                System.out.println(money + " рублей");
+            }
         }
     }
 
-    /*5. Имеется строка, которая содержит символы ? и символы #.  Замените все символы ? на HELLO,
-    а # - удалите. Результат вывести на экран.*/
-    static void taskFifth() {
-        taskPrintFormat("5");
-        String anyText = "dkldgg ?chc#v ?##d?g ?#fg3f#dgb # fgdfh";
-        System.out.println(anyText);
-        anyText = anyText.replaceAll("\\?", "HELLO").replace("#","");
-        System.out.println("\u2BC8After formatting: \"" + anyText + "\"");
+    /*5.Создайте массив типа int. Отсортируйте массив любым способом (
+    по убыванию либо по возрастанию). Результат вывести на экран.*/
+    static void task5() {
+        //long startTime = System.nanoTime();
+        //int[] array = {16, 10, 23, 21, 20, 18, 6, 5, 4, 3};
+        int[] array = new int[11];
+        for (int i = 0; i < array.length; i++)
+            array[i] = new Random().nextInt(100);
+        taskPrintFormat(5);
+        System.out.println(Arrays.toString(array));
+        //Arrays.sort(array);       //----- 1 вариант)
+        for (int i = 0; i < array.length ; i++) {
+            int min = Integer.MAX_VALUE, index = i;
+            for (int j = i + 1; j < array.length; j++){
+                if (array[j] < array[index]) {
+                    index = j;
+                }
+            }
+            if (index != -1) {
+                int temp = array[index];
+                array[index] = array[i];
+                array[i] = temp;
+            }
+        }
+        System.out.println(Arrays.toString(array));
+        //long spentTime = System.nanoTime() - startTime;
+        //System.out.println(spentTime);
     }
 
-    /* x, s, t - параметры*/
-    static double taskFinish(double x, double t, double s) {
-        return Math.pow(Math.sin(Math.pow(x, t)), 2) / Math.sqrt(1 + Math.pow(x, s));
-    }
-
-    static int numberDaysInMonth(int m, int y) {
-        return m < 8 ? (m == 2 ? (y % 4 == 0 ? (y % 100 != 0 ? 29 : (y % 400 == 0 ? 29 : 28)) : 28) : (30 + m % 2)) : (31 - m % 2);
-    }
-
-    static void taskPrintFormat(String k) {
+    static void taskPrintFormat(int k) {
         System.out.println("---------- TASK #" + k + " -------------------------↴");
     }
-
 }
