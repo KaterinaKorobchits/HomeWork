@@ -1,191 +1,226 @@
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
+import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        maxMatchLettersIn2Names();
-        task1();
-        task2();
-        task3();
-        task4();
-        task5();
-    }
-
-    /*Найти максимальное по длине совпадение букв в 2 именах*/
-    static void maxMatchLettersIn2Names() {
-        final String[] catNamesArray = {"Рыжик", "Барсик", "Мурзик", "Мурка", "Васька", "Томасина", "Бобик",
-                "Кристина","Пушок", "Дымка", "Кузя", "Китти", "Барбос", "Масяня", "Барби"};
-        int countMax = 0, count = 0;
-        String str;
-        int name1 = -1, name2 = -1;
-        for (int i = 0; i < catNamesArray.length; i++) {
-            for (int j = i+1; j < catNamesArray.length; j++) {
-                if (catNamesArray[j].startsWith(catNamesArray[i]) || catNamesArray[i].startsWith(catNamesArray[j]))
-                    count = Math.min(catNamesArray[i].length(),catNamesArray[j].length());
-                else {
-                    str = "";
-                    count = 0;
-                    for (int k = 0; k < catNamesArray[i].length(); k++) {
-                        str = str + catNamesArray[i].charAt(k);
-                        if (catNamesArray[j].startsWith(str))
-                            count++;
-                        else
-                            break;
-                    }
-                }
-                if (count >= countMax) {
-                    name1 = i;
-                    name2 = j;
-                    countMax = count;
-                }
-            }
-        }
-        System.out.println("-----Максимальное по длине совпадение букв в 2 именах-----");
-        if (countMax > 0)
-            System.out.println(catNamesArray[name1] + " и " + catNamesArray[name2] +" = " + countMax);
-        else
-            System.out.println("Совпадений нет!");
-    }
-
-    /*1. Создайте массив с 10-ю переменными типа int. Используя оператор "for" найдите и выведите на экран
-    наименьшее и наибольшее значение в массиве.
-    min value = "значение, которое у вас получилось".
-    max value = "значение, которое у вас получилось".
-    Далее замените наименьшее значение на 0, а наибольшее на 99 и выведите получившийся массив на экран в виде
-    [23, 0, 34, 99, 43534]*/
-    static void task1() {
-        //long startTime = System.nanoTime();
+        System.out.println("------- task1:");
+        //int[] array = {4,3,7,1,5,2,8,3,0,1};
         int[] array = new int[10];
-        for (int i = 0; i < array.length; i++)
-            array[i] = new Random().nextInt(100);
-        taskPrintFormat(1);
+        for(int i = 0; i < array.length; i++) {
+            System.out.print(i + 1 + " элемент: ");
+            array[i] = keyboardInput();
+        }
+        int[] array1 = Arrays.copyOf(array,10);
+        int[] array2 = Arrays.copyOf(array,10);
+        int[] array3 = Arrays.copyOf(array,10);
+        arrayOutput(array);
+        System.out.println("------- Selection Sort:");
+        long startTime = System.nanoTime();
+        arrayOutput(selectionSort(array));
+        long timeSpent = System.nanoTime() - startTime;
+        System.out.println("Time spent: " + timeSpent);
         System.out.println(Arrays.toString(array));
-        int maxValue = Integer.MIN_VALUE, minValue = Integer.MAX_VALUE;
-        for (int i : array) {
-            maxValue = Math.max(i,maxValue);
-            minValue = Math.min(i,minValue);
-        }
-        System.out.println("min value = " + minValue + "\nmax value = " + maxValue);
-        for (int i = 0; i < array.length; i++) {
-            if(array[i] == maxValue)
-                array[i] = 99;
-            if(array[i] == minValue)
-                array[i] = 0;
-        }
-        System.out.println("After replacing (min -> 0, max -> 99): " + Arrays.toString(array));
-        //long timeSpent = System.nanoTime() - startTime;
-        //System.out.println(timeSpent);
+        System.out.println("------- Insertion Sort:");
+        startTime = System.nanoTime();
+        arrayOutput(insertionSort(array1));
+        timeSpent = System.nanoTime() - startTime;
+        System.out.println("Time spent: " + timeSpent);
+        System.out.println("------- Arrays.sort():");
+        startTime = System.nanoTime();
+        arrayOutput(insertionSort(array2));
+        timeSpent = System.nanoTime() - startTime;
+        System.out.println("Time spent: " + timeSpent);
+        System.out.println("------- Bubble sort:");
+        System.out.println(Arrays.toString(array3));
+        startTime = System.nanoTime();
+        arrayOutput(bubbleSort(array3));
+        timeSpent = System.nanoTime() - startTime;
+        System.out.println("Time spent: " + timeSpent);
+        System.out.println("------- task2:");
+        int n = new Random().nextInt(100000);
+        System.out.printf("Для вывода %d новостей необходимо %d страниц\n",n ,task2(n));
+        System.out.println("------- Find missing number:");
+        int[] findMis = {9,10,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27};
+        System.out.println(Arrays.toString(findMis) + "\nMissing number: " + lessonFindMissingNumber(findMis));
+        System.out.println("------- Arithmetic operations for long numbers:");
+        String num1 = "900000000";
+        String num2 = "900000000";
+        System.out.println(num1 + " + " + num2 + " = " + lessonAddition(num1, num2));
+        System.out.println(num1 + " - " + num2 + " = " + lessonSubtraction(num1, num2));
+        System.out.println("------- Find the longets word, consisting of other array words:");
+        String[] str = {"dog", "cat", "dogcat", "mouse", "dogandcat"};
+        System.out.println(Arrays.toString(str) + " ---> " + lessonFindLongestWord(str));
     }
 
-    /*2. Создайте массив с 10-ю переменными типа float. Далее найдите дубликаты и выведите их количество.
-    Пример: есть массив {2, 3, 5, 7, 6, 5, 7, 3, 7, 20} - в данном массиве цифра 3 и 7 повторяются.
-    В результате выполнения программы на экран должно вывести:
-        [3] - повторений 2
-        [7] - повторений 3*/
-    static void task2() {
-        float[] array = {3.14f, 1.2f, 453.7f, 3.14f, 5.23f, 6.54f, 1.2f, 6.55f, 3.14f, 1234.67f};
-        int[] exclusion = new int[array.length];
-        int count = 0;
-        taskPrintFormat(2);
-        System.out.println(Arrays.toString(array));
-        for (int i = 0; i < array.length; i++) {
-            count = 1;
-            for (int j = i + 1; j < array.length; j++) {
-                if (array[i] == array[j] & exclusion[i] != -1) {
-                    count++;
-                    exclusion[j] = -1;
-                }
-            }
-            if (count > 1)
-                System.out.println("[" + array[i] + "] - повторений " + count);
-        }
+    static int keyboardInput() {
+        Scanner scanner = new Scanner(System.in);
+        return scanner.nextInt();
     }
 
-    /*3. Напишите программу, которая печатает массив, затем инвертирует (то есть меняет местами
-    первый элемент с последним, второй — с предпоследним и т.д.), и вновь печатает.*/
-    static void task3() {
-        int[] array = new int[11];
-        for (int i = 0; i < array.length; i++)
-            array[i] = new Random().nextInt(100);
-        taskPrintFormat(3);
-        System.out.println(Arrays.toString(array));
-        for (int i = 0, j = array.length - 1; i < array.length/2; i++, j--) {
-            int temp = array[j];
-            array[j] = array[i];
-            array[i] = temp;
-        }
-        System.out.println(Arrays.toString(array));
+    static void arrayOutput(int[] mas) {
+        for (int i = 0; i < mas.length; i++)
+            System.out.printf("\"%d\" %s ",mas[i], i == (mas.length-1) ? "" : "|");
+        System.out.println();
     }
 
-    /*4. Написать программу, определяющую, образуют ли цифры некоторого числа
-    строго возрастающую последовательность. Например: 123 – образуют, 212 – не образуют.*/
-    static void task4() {
-        long number = 12345677;
-        taskPrintFormat(4);
-        /*String str = Long.toString(number);       // ----- 1 вариант
-        for(int i = 0; i < str.length()-1; i++) {
-            if ( str.charAt(i) < str.charAt(i + 1)) {
-                if (i == str.length()-2)
-                    System.out.println(number + " - строго возрастающая последовательность");
-                continue;
-            }
-            else {
-                System.out.println(number + " - НЕ строго возрастающая последовательность");
-                break;
-            }
-        }*/
-        long numberCopy = number;
-        int length = Long.toString(numberCopy).length(), i = 1;
-        int[] mas = new int[length];
-        do{
-            mas[length - i] = (int)numberCopy%10;
-            numberCopy /= 10;
-            i++;
-        } while (numberCopy > 0);
-        for(int k = 0; k < length - 1; k++) {
-            if(mas[k+1] > mas[k]) {
-                if(k == length - 2)
-                    System.out.println(number + " - строго возрастающая последовательность");
-                continue;
-            }
-            else {
-                System.out.println(number + " - НЕ строго возрастающая последовательность");
-                break;
-            }
-        }
-    }
-
-    /*5.Создайте массив типа int. Отсортируйте массив любым способом (
-    по убыванию либо по возрастанию). Результат вывести на экран.*/
-    static void task5() {
-        //long startTime = System.nanoTime();
-        //int[] array = {16, 10, 23, 21, 20, 18, 6, 5, 4, 3};
-        int[] array = new int[11];
-        for (int i = 0; i < array.length; i++)
-            array[i] = new Random().nextInt(100);
-        taskPrintFormat(5);
-        System.out.println(Arrays.toString(array));
-        //Arrays.sort(array);       //----- 1 вариант)
-        for (int i = 0; i < array.length ; i++) {
-            int min = Integer.MAX_VALUE, index = i;
-            for (int j = i + 1; j < array.length; j++){
-                if (array[j] < array[index]) {
+    static int[] selectionSort(int[] mas) {
+        for (int i = 0; i < mas.length ; i++) {
+            int min = mas[i], index = i;
+            for (int j = i + 1; j < mas.length; j++){
+                if (mas[j] < mas[index]) {
                     index = j;
                 }
             }
-            if (index != -1) {
-                int temp = array[index];
-                array[index] = array[i];
-                array[i] = temp;
+            if (index != i) {
+                int temp = mas[index];
+                mas[index] = mas[i];
+                mas[i] = temp;
             }
         }
-        System.out.println(Arrays.toString(array));
-        //long spentTime = System.nanoTime() - startTime;
-        //System.out.println(spentTime);
+        return mas;
     }
 
-    static void taskPrintFormat(int k) {
-        System.out.println("---------- TASK #" + k + " -------------------------↴");
+    static int[] insertionSort(int[] mas) {
+        for(int i = 1; i < mas.length; i++) {
+            int curr = mas[i];
+            int j = i - 1 ;
+            while (j >= 0 && mas[j] > curr) {
+                mas[j+1] = mas[j];
+                j--;
+            }
+            mas[j+1] = curr;
+        }
+        return mas;
+    }
+
+    static int[] bubbleSort(int[] mas) {
+        for (int i = 0; i < mas.length - 1; i++) {
+            boolean b = true;
+            while (b) {
+                b = false;
+                for (int j = 0; j < mas.length - i - 1; j++) {
+                    if (mas[j + 1] < mas[j]) {
+                        int temp = mas[j];
+                        mas[j] = mas[j + 1];
+                        mas[j + 1] = temp;
+                        b = true;
+                    }
+                }
+            }
+        }
+        return mas;
+    }
+
+    static int task2(int n) {
+        return (int)Math.ceil(n*1.0/10);
+    }
+
+    static int lessonFindMissingNumber(int[] mas) {
+        int sum = 0;
+        for(int i: mas)
+            sum += i;
+        return (int)((mas[0] + mas[mas.length-1]) * 1.0 / 2 * (mas.length + 1) - sum);
+    }
+
+    static String lessonAddition(String num1, String num2) {
+        String result = "";
+        int num1Length = num1.length();
+        int num2Length = num2.length();
+        int max = num1Length >= num2Length ? num1Length : num2Length;
+        int help = 0, temp = 0;
+        for (int i = 0; i < max; i++) {
+            if (num1Length > i & num2Length > i)
+                temp = Integer.parseInt("" + num1.charAt(num1Length - 1 - i)) +
+                        Integer.parseInt("" + num2.charAt(num2Length - 1 - i)) + help;
+            else
+                temp = Integer.parseInt("" + (num1Length > num2Length ? num1 : num2).charAt(max - 1 - i)) + help;
+            result = temp % 10 + result;
+            help = temp / 10;
+        }
+        if(help != 0 )
+            result = help + result;
+        return result;
+    }
+
+    static String lessonSubtraction(String number1, String number2) {
+        String result = "";
+        String num1 = "", num2 = "";
+        boolean isNegative = false;
+        if(number2.length() > number1.length()) {
+            num1 = number2;
+            num2 = number1;
+            isNegative = true;
+        }
+        else if (number2.length() == number1.length()) {
+            for (int i = 0; i < number1.length(); i++) {
+                if (number2.charAt(i) > number1.charAt(i)) {
+                    num1 = number2;
+                    num2 = number1;
+                    isNegative = true;
+                    break;
+                }
+                else if (number1.charAt(i) > number2.charAt(i)) {
+                    num1 = number1;
+                    num2 = number2;
+                    break;
+                }
+                else
+                    return "0";
+            }
+        }
+        else{
+            num1 = number1;
+            num2 = number2;
+        }
+        int num1Length = num1.length();
+        int num2Length = num2.length();
+        int max = num1Length >= num2Length ? num1Length : num2Length;
+        int help = 0, temp = 0;
+        for (int i = 0; i < max; i++) {
+            if (num1Length > i & num2Length > i) {
+                int temp1 = Integer.parseInt("" + num1.charAt(num1Length - 1 - i));
+                int temp2 = Integer.parseInt("" + num2.charAt(num2Length - 1 - i));
+                temp = temp1 - temp2 - help;
+            }
+            else
+                temp = Integer.parseInt("" + (num1Length > num2Length ? num1 : num2).charAt(max - 1 - i)) - help;
+            if(temp < 0) {
+                temp += 10;
+                help = 1;
+            }
+            else
+                help = 0;
+            result = temp + result;
+        }
+        result = isNegative ? "-" + result : result;
+        return result.replaceFirst ("^0*", "");
+    }
+
+    static String lessonFindLongestWord(String[] list) {
+        Arrays.sort(list,new Comparator<String>() {
+            @Override
+            public int compare(String s1,String s2) {
+                if (s1.length() < s2.length())
+                    return 1;
+                else if (s1.length() > s2.length())
+                    return -1;
+                else
+                    return 0;
+            }
+        });
+        for(int i = 0; i < list.length; i++) {
+            String temp = list[i];
+            String temp1 = list[i];
+            for (int j = i + 1; j < list.length; j++) {
+                if (temp.contains(list[j]))
+                    temp = temp.replaceAll(list[j], "");
+            }
+            if (temp.equals(""))
+                return list[i];
+        }
+        return "";
     }
 }
