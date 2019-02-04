@@ -12,7 +12,7 @@ public class Main {
         count = in.nextInt();
         in.nextLine();
         Patient[] array = new Patient[count];
-        /*for(int i = 0; i < count; i++) {
+        for(int i = 0; i < count; i++) {
             System.out.println((i + 1) + " Пациент: ");
             System.out.print("\t⬪ Введите ФИО: ");
             String fio = in.nextLine();
@@ -26,7 +26,7 @@ public class Main {
             System.out.print("\t⬪ Резидент?(Y/N): ");
             boolean isResident = in.nextLine().charAt(0) == 'Y' ? true : false;
             array[i] = new Patient(fio, age, address, diagnosis, isResident);
-        }*/
+        }
         System.out.println(Arrays.toString(array));
         System.out.print("\n\uD83E\uDC46 Найти пациента(ов) по возрасту?(Y/N)");
         if(in.nextLine().charAt(0) == 'Y') {
