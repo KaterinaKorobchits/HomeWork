@@ -8,7 +8,7 @@ public class Main {
     public static void main(String[] args) {
         Scanner in = new Scanner(System.in);
         int count;
-        System.out.print("Введите количетсво пациентов -> ");
+        System.out.print("Введите количетсво пациентов -> kkkk");
         count = in.nextInt();
         in.nextLine();
         Patient[] array = new Patient[count];
