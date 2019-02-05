@@ -13,7 +13,7 @@ public class ATM {
     }
 
     public boolean add(int summ) {
-        if ( summ % 100 == 10 || summ % 100 == 30 || summ % 10 != 0)
+        if (summ < 20 || summ % 100 == 10 || summ % 100 == 30 || summ % 10 != 0)
             return false;
         int[] temp = breakIntoBanknotes(summ);
         numberOf100Banknotes += temp[0];
@@ -23,7 +23,7 @@ public class ATM {
     }
 
     public String cash(int summ) {
-        if ( summ % 100 == 10 || summ % 100 == 30 || summ % 10 != 0)
+        if (summ < 20 || summ % 100 == 10 || summ % 100 == 30 || summ % 10 != 0)
             return "Невозможно выдать!";
         else {
             int[] temp = breakIntoBanknotes(summ);
