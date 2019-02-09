@@ -4,9 +4,9 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        //firstPartATM();
+        firstPartATM();
         //secondPart();
-        thirdPart();
+        //thirdPart();
     }
 
     static public void firstPartATM() {

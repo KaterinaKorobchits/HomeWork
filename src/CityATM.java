@@ -28,17 +28,20 @@ public class CityATM extends ATM implements AllMoney {
             while(money >= 100 && numberOf100Banknotes > 0) {
                 money -= 100;
                 temp[BANKNOTE100]++;
+                numberOf100Banknotes--;
             }
             while((money == 50 || money > 60) && numberOf50Banknotes > 0) {
                 money -= 50;
                 temp[BANKNOTE50]++;
+                numberOf50Banknotes--;
             }
-            if(money % 20 != 0 || numberOf20Banknotes < money / 20)
+            if(money % 20 != 0 || numberOf20Banknotes < money / 20) {
+                numberOf100Banknotes += temp[BANKNOTE100];
+                numberOf50Banknotes += temp[BANKNOTE50];
                 return null;
+            }
             else {
                 numberOf20Banknotes -= money / 20;
-                numberOf100Banknotes -= temp[BANKNOTE100];
-                numberOf50Banknotes -= temp[BANKNOTE50];
                 temp[BANKNOTE20] += money / 20;
             }
             return temp;
