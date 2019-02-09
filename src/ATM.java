@@ -1,4 +1,4 @@
-public abstract class ATM implements Withdrawal, AddMoney, GetAtmInfo{
+public abstract class ATM implements Withdrawal, AddMoney, GetAtmInfo, AllMoney{
 
     int numberOf100Banknotes;
     int numberOf50Banknotes;

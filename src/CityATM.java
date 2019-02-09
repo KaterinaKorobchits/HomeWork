@@ -4,7 +4,6 @@ public class CityATM extends ATM implements AllMoney {
     private static final int BANKNOTE50 = 1;
     private static final int BANKNOTE20 = 2;
     private static final int NumberOFBANKNOTES = 3;
-    private int[] arrayOfBanknotes;
 
     public CityATM(String manufacturer) {
         this(0,0,0, manufacturer);
