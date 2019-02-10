@@ -20,16 +20,16 @@ public class CityATM extends ATM implements AllMoney {
 
     @Override
     public int[] withdrawal(int money) {
-        if (money < 20 || allMoney() < money || money % 100 == 30 || money % 10 != 0)
+        if (money < 20 || allMoney() < money || money == 30 || money % 10 != 0)
             return null;
         else {
             int[] temp = new int[NumberOFBANKNOTES];
-            while(money >= 100 && numberOf100Banknotes > 0) {
+            while(money >= 100 && numberOf100Banknotes > 0 && money != 110 && money != 130) {
                 money -= 100;
                 temp[BANKNOTE100]++;
                 numberOf100Banknotes--;
             }
-            while((money == 50 || money > 60) && numberOf50Banknotes > 0) {
+            while((money == 50 || money > 60 && money != 80) && numberOf50Banknotes > 0) {
                 money -= 50;
                 temp[BANKNOTE50]++;
                 numberOf50Banknotes--;
@@ -57,9 +57,9 @@ public class CityATM extends ATM implements AllMoney {
 
     @Override
     public boolean add(int money) {
-        if (money < 20 || money % 100 == 30 || money % 10 != 0)
+        if (money < 20 || money == 30 || money % 10 != 0)
             return false;
-        while(money >= 100) {
+        while(money >= 100 && money != 110 && money != 130) {
             money -= 100;
             numberOf100Banknotes++;
         }
