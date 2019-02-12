@@ -1,63 +1,104 @@
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 public class Main {
+
+    static Scanner in = new Scanner(System.in);
+    static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
     public static void main(String[] args) {
-        firstPartATM();
-        //secondPart();
-        //thirdPart();
+        Student[] listOfStudents = enterStudents();
+        int numberOfStudents = listOfStudents.length;
+        Calendar now = Calendar.getInstance();
+        int month = 0, avYear = 0, avMonth = 0;
+        for(Student st: listOfStudents) {
+            Calendar dateOfBirth = Calendar.getInstance();
+            dateOfBirth.setTime(st.dateOfBirth);
+            int year = now.get(Calendar.YEAR) - dateOfBirth.get(Calendar.YEAR);
+            int monthNow = now.get(Calendar.MONTH), monthBirthday = dateOfBirth.get(Calendar.MONTH);
+            if(monthNow < monthBirthday) {
+                year--;
+                month += year * 12 + 12 + (monthNow - monthBirthday);
+            }
+            else
+                month += year * 12 + now.get(Calendar.MONTH) - dateOfBirth.get(Calendar.MONTH);
+            if(now.get(Calendar.DAY_OF_MONTH) < dateOfBirth.get(Calendar.DAY_OF_MONTH))
+                month--;
+        }
+        avMonth = month/numberOfStudents%12;
+        avYear = month/numberOfStudents/12;
+        System.out.println("Средний возраст(лет, месяцев): " + avYear + ", " + avMonth);
+        //readFromFile();
+        //writeToFile();
     }
 
-    static public void firstPartATM() {
-        CityATM atm1 = new CityATM("ABCD");
-        System.out.println("0 - Инфо, 1 - Набор валют в банкомате, 2 - Добавить деньги в банкомат, 3 - Снять деньги");
-        Scanner in = new Scanner(System.in);
-        System.out.print("----- Выберите действие: ");
-        while(in.hasNextInt()) {
-            int temp = Integer.parseInt(in.nextLine());
-            switch (temp) {
-                case 0:
-                    System.out.println(atm1.getInfoAtm());
-                    break;
-                case 1:
-                    atm1.print();
-                    break;
-                case 2:
-                    System.out.print("Введите сумму: ");
-                    if (atm1.add(Integer.parseInt(in.nextLine())))
-                        System.out.println("Сумма успешно добавлена");
-                    else
-                        System.out.println("Номинал валют не совпадает!");
-                    break;
-                case 3:
-                    System.out.print("Введите сумму: ");
-                    atm1.printWithdrawal(atm1.withdrawal(Integer.parseInt(in.nextLine())));
-                    break;
-                default:
-                    return;
+    public static Student[] enterStudents() {
+        System.out.print("Введите количество студентов - > ");
+        int numberOfStudents = in.nextInt();
+        in.nextLine();
+        Student[] listOfStudents = new Student[numberOfStudents];
+        for(int i = 0; i < numberOfStudents; i++) {
+            System.out.print((i + 1) + " студент: \n\t Имя: ");
+            String name = in.nextLine();
+            System.out.print("\t Фамилия: ");
+            String surName = in.nextLine();
+            System.out.print("\t Дата рождения: ");
+            Date dateOfBirth = new Date();
+            boolean error = true;
+            do {
+                try {
+                    dateOfBirth = dateFormat.parse(in.nextLine());
+                    error = false;
+                } catch (ParseException e) {
+                    System.out.println("*** Неправильно введена дата!!!");
+                    System.out.print("\t Дата рождения(dd.mm.yyyy): ");
+                }
+            } while(error);
+            listOfStudents[i] = new Student(name, surName, dateOfBirth);
+        }
+        return listOfStudents;
+    }
+
+    public static void readFromFile() {
+        /*try {
+            Scanner in = new Scanner(new FileReader("notes.txt"));
+            while (in.hasNextLine()) {
+                System.out.println(in.nextLine());
             }
-            System.out.println("0 - Инфо, 1 - Набор валют в банкомате, 2 - Добавить деньги в банкомат, 3 - Снять деньги");
-            System.out.print("----- Выберите действие: ");
+        } catch (FileNotFoundException e) {
+            System.out.println("*** Файл не найден!");
+        }*/
+        try(FileReader reader = new FileReader("notes.txt"))
+        {
+            int c;
+            while((c=reader.read())!=-1){
+
+                System.out.print((char)c);
+            }
+        }
+        catch(IOException ex){
+            System.out.println("*** Файл не найден!");
         }
     }
 
-    static public void secondPart() {
-        int mas1[] = new int[10];
-        int mas2[] = new int[20];
-        for(int i = 0; i < mas1.length; i++)
-            mas1[i] = i+1;
-        System.arraycopy(mas1, 0, mas2, (mas2.length - mas1.length)/2, mas1.length);
-        System.out.println(Arrays.toString(mas2));
-    }
-
-    static public void thirdPart() {
-        ArrayList<Figure> list = new ArrayList<>();
-        list.add(new Circle(2.0));
-        list.add(new Triangle(3.0, 3.7, 6.9));
-        list.add(new Square(4.7));
-        list.add(new Rectangle(3.7, 8.9));
-        for(Figure f : list)
-            f.print();
+    public static void writeToFile() {
+        System.out.println("Введите текст дял записи в файл(признак окончания строка exit): ");
+        try(FileWriter writer = new FileWriter("notes1.txt", false))
+        {
+            while(true) {
+                String temp = in.nextLine();
+                if (temp.equals("exit"))
+                    break;
+                else
+                    writer.write(temp + "\n");
+            }
+        }
+        catch(IOException ex){
+            System.out.println(ex.getMessage());
+        }
     }
 }
