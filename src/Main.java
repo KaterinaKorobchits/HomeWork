@@ -1,104 +1,122 @@
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.sql.Struct;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
 
-    static Scanner in = new Scanner(System.in);
+    static Scanner in = Calculator.in;
     static SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     public static void main(String[] args) {
-        Student[] listOfStudents = enterStudents();
-        int numberOfStudents = listOfStudents.length;
-        Calendar now = Calendar.getInstance();
-        int month = 0, avYear = 0, avMonth = 0;
-        for(Student st: listOfStudents) {
-            Calendar dateOfBirth = Calendar.getInstance();
-            dateOfBirth.setTime(st.dateOfBirth);
-            int year = now.get(Calendar.YEAR) - dateOfBirth.get(Calendar.YEAR);
-            int monthNow = now.get(Calendar.MONTH), monthBirthday = dateOfBirth.get(Calendar.MONTH);
-            if(monthNow < monthBirthday) {
-                year--;
-                month += year * 12 + 12 + (monthNow - monthBirthday);
-            }
-            else
-                month += year * 12 + now.get(Calendar.MONTH) - dateOfBirth.get(Calendar.MONTH);
-            if(now.get(Calendar.DAY_OF_MONTH) < dateOfBirth.get(Calendar.DAY_OF_MONTH))
-                month--;
-        }
-        avMonth = month/numberOfStudents%12;
-        avYear = month/numberOfStudents/12;
-        System.out.println("Средний возраст(лет, месяцев): " + avYear + ", " + avMonth);
-        //readFromFile();
-        //writeToFile();
+        // калькулятор
+        do{
+            calculator();
+            System.out.print("Еще? (Y/N)");
+        } while(!Calculator.in.next().equals("N"));
+        //Модернизация задания со Студентами
+        //menuForStudent();
     }
 
-    public static Student[] enterStudents() {
-        System.out.print("Введите количество студентов - > ");
-        int numberOfStudents = in.nextInt();
-        in.nextLine();
-        Student[] listOfStudents = new Student[numberOfStudents];
-        for(int i = 0; i < numberOfStudents; i++) {
+    public static void calculator() {
+        double num1 = Calculator.getNumber();
+        double num2 = Calculator.getNumber();
+        char operation = Calculator.getOperation();
+        double result = 0;
+        try {
+            result = Calculator.getResult(num1, num2, operation);
+            System.out.println(num1 + " " + operation + " " + num2 + " = " + result);
+        } catch (Exception ex) {
+            if(ex instanceof CalculationMyException)
+                System.out.println(((CalculationMyException) ex).getRussianMessage());
+            else
+                System.out.println("*** Неизвестная ошибка ***");
+        }
+    }
+
+    public static ArrayList<Student> enterStudents(ArrayList<Student> listOfStudents) {
+        int i = 0;
+        do {
             System.out.print((i + 1) + " студент: \n\t Имя: ");
             String name = in.nextLine();
             System.out.print("\t Фамилия: ");
             String surName = in.nextLine();
-            System.out.print("\t Дата рождения: ");
-            Date dateOfBirth = new Date();
-            boolean error = true;
-            do {
+            System.out.print("\t Дата рождения(dd.mm.yyyy): ");
+            Date dateOfBirth = null;
+            while(dateOfBirth == null) {
                 try {
                     dateOfBirth = dateFormat.parse(in.nextLine());
-                    error = false;
                 } catch (ParseException e) {
                     System.out.println("*** Неправильно введена дата!!!");
                     System.out.print("\t Дата рождения(dd.mm.yyyy): ");
                 }
-            } while(error);
-            listOfStudents[i] = new Student(name, surName, dateOfBirth);
-        }
+            }
+            Student a = new Student(name, surName, dateOfBirth);
+            listOfStudents.add(a);
+            System.out.print("Продолжить ввод студентов? (Y/N) -> ");
+            i++;
+        } while(in.nextLine().charAt(0) == 'Y');
         return listOfStudents;
     }
 
-    public static void readFromFile() {
-        /*try {
-            Scanner in = new Scanner(new FileReader("notes.txt"));
-            while (in.hasNextLine()) {
-                System.out.println(in.nextLine());
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("*** Файл не найден!");
-        }*/
-        try(FileReader reader = new FileReader("notes.txt"))
-        {
-            int c;
-            while((c=reader.read())!=-1){
-
-                System.out.print((char)c);
-            }
+    public static void menuForStudent() {
+        ArrayList<Student> list = new ArrayList<>();
+        if(readFromFileStudents() != null) {
+            list = readFromFileStudents();
+            System.out.print("Студенты в базе уже есть ");
         }
-        catch(IOException ex){
-            System.out.println("*** Файл не найден!");
+        else
+            System.out.print("Студентов в базе НЕТ ");
+        do{
+            if(list.size() > 0) {
+                System.out.print("[1 - просмотр студентов; 2 - добавить студентов; 0 - выход] -> ");
+            }
+            else
+                System.out.print("[2 - добавить студентов; 0 - выход] -> ");
+            char addStudents = in.nextLine().charAt(0);
+            switch (addStudents) {
+                case '1':
+                    if(list.size() > 0)
+                        for (Student st: list)
+                            System.out.print(st.toString());
+                    else
+                        System.out.println("База пуста");
+                    break;
+                case '2':
+                    list = enterStudents(list);
+                    break;
+                case '0':
+                    writeToFileStudents(list);
+                    return;
+                default:
+                    System.out.println("Неверный ввод дествия");
+                    return;
+            }
+
+        } while(true);
+    }
+
+    public static boolean writeToFileStudents(ArrayList<Student> list) {
+        try(ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("Students.txt"))) {
+            oos.writeObject(list);
+            return true;
+        } catch(Exception ex){
+            System.out.println(ex.getMessage());
+            return false;
         }
     }
 
-    public static void writeToFile() {
-        System.out.println("Введите текст дял записи в файл(признак окончания строка exit): ");
-        try(FileWriter writer = new FileWriter("notes1.txt", false))
-        {
-            while(true) {
-                String temp = in.nextLine();
-                if (temp.equals("exit"))
-                    break;
-                else
-                    writer.write(temp + "\n");
-            }
-        }
-        catch(IOException ex){
-            System.out.println(ex.getMessage());
+    public static ArrayList<Student> readFromFileStudents() {
+        try(ObjectInputStream ois = new ObjectInputStream(new FileInputStream("Students.txt"))) {
+            ArrayList<Student> list = (ArrayList<Student>) ois.readObject();
+            return list;
+        } catch(Exception ex){
+            System.out.println("Нет файла такого(((");
+            return null;
         }
     }
 }

@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Student {
+public class Student implements Serializable {
     String name;
     String surName;
     Date dateOfBirth;
@@ -15,6 +16,8 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Имя: " + name + "; Фамилия: " + surName + "; Дата рождения" + dateFormat.format(dateOfBirth) + "\n";
+        return "Имя: " + name + "; Фамилия: " + surName + "; Дата рождения: " + dateFormat.format(dateOfBirth) + "\n";
     }
+
+
 }
