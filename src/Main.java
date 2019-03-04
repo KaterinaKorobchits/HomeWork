@@ -1,73 +1,54 @@
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import javax.net.ssl.HttpsURLConnection;
-import java.io.*;
-import java.net.URL;
-import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 
     public static void main(String[] args) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Gson gson = new GsonBuilder().setPrettyPrinting().registerTypeAdapter(Wife.class, new WifeDeAndSerializer()).create();
-        try (FileInputStream reader = new FileInputStream("note1.txt")) {
-            readJSONThroughURlConnectionToFile("https://goo.gl/Hc8J4n", "note1.txt");
-            Person[] persons = objectMapper.readValue(reader, Person[].class);
-            System.out.println("*** Parse with JACKSON:");
-            for (Person person : persons)
-                System.out.println(person.toString());
-            String json = gson.toJson(persons);
-            System.out.println("*** Stream with GSON:");
-            System.out.println(json);
-            Person[] persons2 = gson.fromJson(json, Person[].class);
-            System.out.println("*** Parse with GSON:");
-            for (Person person: persons2)
-                System.out.println(person.toString());
-            System.out.println("*** Stream with JSONObject/JSONArray:");
-            JSONArray jsonArray = new JSONArray();
-            for(int i = 0; i < persons2.length; i++) {
-                Person personi = persons2[i];
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("name", personi.name);
-                jsonObject.put("age", personi.age);
-                jsonObject.put("isStudent", personi.isStudent);
-                if(personi.pet != null) {
-                    ArrayList<String> pets = personi.pet;
-                    JSONArray jsonArrayPet = new JSONArray();
-                    for (int k = 0; k < pets.size(); k++)
-                        jsonArrayPet.put(pets.get(k));
-                    jsonObject.put("pet", jsonArrayPet);
-                }
-                if(personi.wife != null) {
-                    Wife wife = personi.wife;
-                    JSONObject jsonObjectWife = new JSONObject();
-                    jsonObjectWife.put("name", wife.name);
-                    jsonObjectWife.put("age", wife.age);
-                    jsonObject.put("wife", jsonObjectWife);
-                }
-                jsonArray.put(jsonObject.);
-            }
-            System.out.println(jsonArray);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String str1 = "Hellowoooorld!!  and UUUnAAA ";
+        String str2 = "hello.xml";
+        System.out.println(str1 + " ->\n" + regexFirst(str1).toString());
+        System.out.println(str1 + " ->\n" + regexFirstB(str1).toString());
+        System.out.println(str2 + " ->\t" + regexSecond(str2));
     }
 
-    public static void readJSONThroughURlConnectionToFile(String urlAddress, String fileName) throws IOException {
-        URL url = new URL(urlAddress);
-        HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
-        StringBuilder stringBuilder = new StringBuilder();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-             FileWriter write = new FileWriter(fileName)) {
-            String s;
-            while ((s = reader.readLine()) != null) {
-                stringBuilder.append(s);
-            }
-            write.write(stringBuilder.toString());
+    public static StringBuilder regexFirst(String str) {
+        long startTime = System.nanoTime();
+        StringBuilder res = new StringBuilder();
+        Pattern p = Pattern.compile("(.)\\1+");
+        Matcher m = p.matcher(str);
+        int start = 0;
+        while (m.find()) {
+            res.append(str, start, m.start()+1).append(m.group().length());
+            start = m.end();
         }
+        if (start != str.length())
+            res.append(str.substring(start));
+        System.out.println(System.nanoTime() - startTime);
+        return res;
+    }
+
+    //второй вариант - быстрее
+    public static StringBuilder regexFirstB(String str) {
+        long startTime = System.nanoTime();
+        StringBuilder res = new StringBuilder();
+        Pattern p = Pattern.compile("(.)\\1*");
+        Matcher m = p.matcher(str);
+        while (m.find()) {
+            res.append(m.group(1));
+            int length = m.group().length();
+            if (length > 1)
+                res.append(length);
+        }
+        System.out.println(System.nanoTime() - startTime);
+        return res;
+    }
+
+    public static String regexSecond(String str) {
+        Pattern p = Pattern.compile(".[^\\.]+$");
+        Matcher m = p.matcher(str);
+        if (m.find())
+            return m.group().substring(1);
+        else
+            return "*** неверный ввод";
     }
 }
