@@ -1,43 +1,27 @@
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.regex.Matcher;
+import java.util.Scanner;
 
 public class Main {
 
-    public static void main(String[] args) throws IllegalAccessException {
-        Class myPerson = Person.class;
-        Person person = new Person();
-        Field[] fields = myPerson.getDeclaredFields();
-        Method[] methods = myPerson.getDeclaredMethods();
-        System.out.print("Поля: ");
-        for (Field f: fields)
-            System.out.print(f.getName() + " (" + f.getType() + ")    ");
-        System.out.print("\nМетоды: ");
-        for (Method m: methods)
-            System.out.print(m.toString() + "    ");
-        try {
-            Field name = myPerson.getDeclaredField("name");
-            name.setAccessible(true);
-            name.set(person, "Babi");
-            Field age = myPerson.getDeclaredField("age");
-            age.setAccessible(true);
-            age.set(person, 29);
-            Field height = myPerson.getDeclaredField("height");
-            height.setAccessible(true);
-            height.set(person, 178.9f);
-            Method getName = myPerson.getMethod("getName", null);
-            Method getAge = myPerson.getMethod("getAge", null);
-            Method getHeight = myPerson.getMethod("getHeight", null);
-            System.out.println("\nName: " + getName.invoke(person) + ", age: " + getAge.invoke(person) + ", height: " + getHeight.invoke(person));
-        } catch (NoSuchFieldException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        MyThread thread1 = new MyThread();
+        MyThread thread2 = new MyThread();
+        thread1.setName("Thread_1");
+        thread2.setName("Thread_2");
+        System.out.print("Чтобы стартануть потоки введите start -> ");
+        String start = sc.nextLine();
+        if (start.equals("start")) {
+            thread1.start();
+            thread2.start();
+        } else
+            return;
+    }
+
+    //synchronized static void print10(int firstNumber) {
+    static void print10(int firstNumber) {
+        for (int j = firstNumber; j < 10 + firstNumber; j++)
+            System.out.print(j + " ");
     }
 }
