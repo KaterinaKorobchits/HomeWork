@@ -1,0 +1,1 @@
+[{	"name": "Vasia",	"age": 20,	"isStudent": false,	"wife": null,	"pet": ["cat", "dog", "fish"]}, {	"name": "Misha",	"age": 22,	"isStudent": true,	"wife": null,	"pet": ["cat", "fish"]}, {	"name": "GoGi",	"age": 27,	"isStudent": false,	"wife": {		"name": "Masha",		"age": 18	},	"pet": null}]
